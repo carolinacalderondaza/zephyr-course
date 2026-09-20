@@ -1,0 +1,6 @@
+board:
+  name: my_copy_board
+  full_name: MY COPY BOARD
+  vendor: iomico
+  socs:
+    - name: esp32
