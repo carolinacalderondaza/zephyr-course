@@ -1,0 +1,6 @@
+board:
+  name: my_scratch_board
+  full_name: MY SCRATCH BOARD
+  vendor: iomico
+  socs:
+    - name: esp32

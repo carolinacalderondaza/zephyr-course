@@ -1,0 +1,9 @@
+config HEAP_MEM_POOL_ADD_SIZE_BOARD
+	int
+	default 4096
+	
+config BOARD_MY_SCRATCH_BOARD
+    	select SOC_ESP32_WROOM_32UE_N4
+    	select SOC_ESP32_PROCPU
+
+
