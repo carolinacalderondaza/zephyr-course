@@ -34,9 +34,9 @@ int main(void)
    
    /* Blue led with Zephir driver*/
    
-/*   bool led_state = true;
+   bool led_state = true;
     if (!gpio_is_ready_dt(&led)) return 0;
-    if (gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE) < 0) return 0;*/
+    if (gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE) < 0) return 0;
     
     
 
@@ -46,11 +46,11 @@ int main(void)
     
      /* Blue led with Zephir driver*/
       
-    /*    if (gpio_pin_toggle_dt(&led) < 0) return 0;
+        if (gpio_pin_toggle_dt(&led) < 0) return 0;
 
         led_state = !led_state;
         LOG_INF("LED state: %s", led_state ? "ON" : "OFF");
-        k_msleep(CONFIG_APP_HEARTBEAT_PERIOD_MS);*/
+        k_msleep(CONFIG_APP_HEARTBEAT_PERIOD_MS);
     }
     
    
