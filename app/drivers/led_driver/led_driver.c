@@ -2,13 +2,14 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/logging/log.h>
 #include <errno.h>
+#include "led_driver.h"
 
 #define DT_DRV_COMPAT led_driver
 
 LOG_MODULE_REGISTER(led_driver, LOG_LEVEL_INF);
 
 static const struct gpio_dt_spec led =
-   // GPIO_DT_SPEC_GET(DT_NODELABEL(blue_led), gpios);
+   // GPIO_DT_SPEC_GET(DT_NODELABEL(blue_led), gpios);   //Funcionaba solo para blue_led
     GPIO_DT_SPEC_INST_GET(0 , gpios);
 
 static int sample_fetch_my_impl(const struct device *dev, enum sensor_channel chan)
@@ -28,11 +29,37 @@ static int channel_get_my_impl(const struct device *dev, enum sensor_channel cha
 
 }
 
+struct led_driver_data {
+    int led_state;
+};
+
+static struct led_driver_data led_data;
+
+int led_driver_set_state(const struct device *dev, int state)
+{
+    struct led_driver_data *data = dev->data;
+
+    data->led_state = state;
+
+    LOG_INF("led_state = %d", data->led_state);
+
+    return 0;
+}
+
+struct led_driver_api {
+    struct sensor_driver_api sensor_api;
+    int (*set_led_state)(const struct device *dev, int state);
+};
+
 
 static DEVICE_API(sensor, api_iomico_lecture) = {
         .sample_fetch = sample_fetch_my_impl,
 	.channel_get = channel_get_my_impl,
+	//int (*set_led_state)(const struct device *dev, int state);
 };
+
+
+
 
 // Init-fn
 static int init(const struct device *dev){
@@ -51,4 +78,7 @@ static int init(const struct device *dev){
 
 }
 
-DEVICE_DT_INST_DEFINE(0, init, NULL, NULL, NULL, POST_KERNEL, 80, &api_iomico_lecture);
+//DEVICE_DT_INST_DEFINE(0, init, NULL, NULL, NULL, POST_KERNEL, 80, &api_iomico_lecture);
+DEVICE_DT_INST_DEFINE(0, init, NULL, &led_data, NULL, POST_KERNEL, 80, &api_iomico_lecture);
+
+
