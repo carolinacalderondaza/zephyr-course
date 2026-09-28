@@ -9,7 +9,7 @@
 LOG_MODULE_REGISTER(led_driver, LOG_LEVEL_INF);
 
 static const struct gpio_dt_spec led =
-   // GPIO_DT_SPEC_GET(DT_NODELABEL(blue_led), gpios);   //Funcionaba solo para blue_led
+   // GPIO_DT_SPEC_GET(DT_NODELABEL(blue_led), gpios);   //Manejo GPIO con blue_led
     GPIO_DT_SPEC_INST_GET(0 , gpios);
 
 static int sample_fetch_my_impl(const struct device *dev, enum sensor_channel chan)
@@ -38,9 +38,7 @@ static struct led_driver_data led_data;
 int led_driver_set_state(const struct device *dev, int state)
 {
     struct led_driver_data *data = dev->data;
-
     data->led_state = state;
-
     LOG_INF("led_state = %d", data->led_state);
 
     return 0;
@@ -55,11 +53,7 @@ struct led_driver_api {
 static DEVICE_API(sensor, api_iomico_lecture) = {
         .sample_fetch = sample_fetch_my_impl,
 	.channel_get = channel_get_my_impl,
-	//int (*set_led_state)(const struct device *dev, int state);
 };
-
-
-
 
 // Init-fn
 static int init(const struct device *dev){
@@ -71,7 +65,6 @@ static int init(const struct device *dev){
         }
 
         int ret = gpio_pin_configure_dt(&led, GPIO_OUTPUT_INACTIVE);
-
         LOG_INF("GPIO configure ret = %d", ret);
 
         return ret;
