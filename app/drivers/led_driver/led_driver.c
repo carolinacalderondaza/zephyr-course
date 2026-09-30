@@ -8,6 +8,10 @@
 
 LOG_MODULE_REGISTER(led_driver, LOG_LEVEL_INF);
 
+struct led_driver_data {
+    int led_state;
+};
+
 static const struct gpio_dt_spec led =
    // GPIO_DT_SPEC_GET(DT_NODELABEL(blue_led), gpios);   //Manejo GPIO con blue_led
     GPIO_DT_SPEC_INST_GET(0 , gpios);
@@ -21,17 +25,19 @@ static int sample_fetch_my_impl(const struct device *dev, enum sensor_channel ch
 }
 
 static int channel_get_my_impl(const struct device *dev, enum sensor_channel chan, struct sensor_value *val){
-	LOG_INF("Hello From Channel Get, channel %d", chan);
+	
+    LOG_INF("Hello From Channel Get, channel %d", chan);
         
-        int ret = gpio_pin_set_dt(&led, 0);
-        //LOG_INF("gpio_pin_set OFF ret = %d", ret);
-        return ret;
+    int ret = gpio_pin_set_dt(&led, 0);
+
+    struct led_driver_data *data = dev->data;
+    val->val1 = data->led_state;
+    val->val2 = 0;
+
+    return ret;
 
 }
 
-struct led_driver_data {
-    int led_state;
-};
 
 static struct led_driver_data led_data;
 

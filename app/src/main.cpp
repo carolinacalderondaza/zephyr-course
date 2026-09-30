@@ -31,7 +31,7 @@ namespace {
 		led_driver_set_state(driver, i);
 		i++;
 		
-		k_msleep(500);
+		k_msleep(500);     
 	}
 }
 

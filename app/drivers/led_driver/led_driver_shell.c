@@ -1,4 +1,92 @@
 #include <zephyr/shell/shell.h>
+#include <zephyr/device.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/sensor.h>
+
+/* Shell para info cmd */
+
+static int cmd_info_handler(const struct shell *sh, int argc, char **argv)
+{
+    const struct device *driver =
+        DEVICE_DT_GET(DT_NODELABEL(led_driver0));
+
+    shell_print(sh, "Device: %s", driver->name);
+    shell_print(sh, "Ready: %s",
+                device_is_ready(driver) ? "yes" : "no");
+
+    return 0;
+}
+
+
+/* Shell para fetch cmd */
+
+static int cmd_fetch_handler(const struct shell *sh, int argc, char **argv)
+{
+    const struct device *driver =
+        DEVICE_DT_GET(DT_NODELABEL(led_driver0));
+
+    int ret = sensor_sample_fetch(driver);
+
+    shell_print(sh, "Sample fetch returned: %d", ret);
+
+    return ret;
+}
+
+/* Shell para read cmd */
+
+static int cmd_read_handler(const struct shell *sh, int argc, char **argv)
+{
+    const struct device *driver =
+        DEVICE_DT_GET(DT_NODELABEL(led_driver0));
+
+    struct sensor_value val;
+
+    int ret = sensor_channel_get(
+        driver,
+        SENSOR_CHAN_AMBIENT_TEMP,
+        &val
+    );
+
+    shell_print(sh, "Channel get returned: %d", ret);
+    shell_print(sh, "Value: %d.%06d", val.val1, val.val2);
+
+    return ret;
+}
+
+SHELL_STATIC_SUBCMD_SET_CREATE(sensor_subcmd,
+    [0] = SHELL_CMD_ARG(
+        info,
+        NULL,
+        "Show sensor device information",
+        cmd_info_handler,
+        1,
+        0
+    ),
+        [1] = SHELL_CMD_ARG(
+        fetch,
+        NULL,
+        "Fetch a sensor sample",
+        cmd_fetch_handler,
+        1,
+        0
+    ),
+
+        [2] = SHELL_CMD_ARG(
+        read,
+        NULL,
+        "Read sensor value",
+        cmd_read_handler,
+        1,
+        0
+    ),
+
+       [3] = SHELL_SUBCMD_SET_END,
+);
+
+SHELL_CMD_REGISTER(sensor, &sensor_subcmd, "Sensor commands", NULL );
+
+
+/* Shell para channel get cmd */
 
 static int cmd_channel_get_handler(const struct shell *sh, int argc, char ** argv)
 {
@@ -13,5 +101,6 @@ SHELL_STATIC_SUBCMD_SET_CREATE(led_driver_subcmd,
 
 
 SHELL_CMD_REGISTER(led_driver, &led_driver_subcmd, "Led driver set of commands", NULL);
+
 
 
