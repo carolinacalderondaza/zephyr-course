@@ -2,6 +2,9 @@
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/sensor.h>
+#include <stdlib.h>
+#include <errno.h>
+#include "led_driver.h"
 
 /* Shell para info cmd */
 
@@ -53,6 +56,27 @@ static int cmd_read_handler(const struct shell *sh, int argc, char **argv)
     return ret;
 }
 
+/* Shell para read set */
+
+static int cmd_set_handler(const struct shell *sh, int argc, char **argv)
+{
+    const struct device *driver =
+        DEVICE_DT_GET(DT_NODELABEL(led_driver0));
+
+    int value = atoi(argv[1]);
+
+    if (value < 0 || value > 100) {
+        shell_error(sh, "Value must be between 0 and 100");
+        return -EINVAL;
+    }
+
+    led_driver_set_state(driver, value);
+
+    shell_print(sh, "LED state set to %d", value);
+
+    return 0;
+}
+
 SHELL_STATIC_SUBCMD_SET_CREATE(sensor_subcmd,
     [0] = SHELL_CMD_ARG(
         info,
@@ -80,7 +104,16 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sensor_subcmd,
         0
     ),
 
-       [3] = SHELL_SUBCMD_SET_END,
+        [3] = SHELL_CMD_ARG(
+        set,
+        NULL,
+        "Set LED state",
+        cmd_set_handler,
+        2,
+        0
+    ),
+
+    [4] = SHELL_SUBCMD_SET_END,
 );
 
 SHELL_CMD_REGISTER(sensor, &sensor_subcmd, "Sensor commands", NULL );
